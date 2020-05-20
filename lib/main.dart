@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:rflutter_alert/rflutter_alert.dart';
 import 'quiz_brain.dart';
 
 QuizBrain quizBrain = QuizBrain();
@@ -32,17 +33,37 @@ class _QuizPageState extends State<QuizPage> {
 
   void checkAnswer(bool userPickedAnswer) {
     bool correctAnswer = quizBrain.getCorrectAnswer();
+
     setState(() {
-      if (userPickedAnswer == correctAnswer) {
-        scoreKeeper.add(
-          Icon(Icons.check, color: Colors.green),
-        );
-      } else {
-        scoreKeeper.add(
-          Icon(Icons.close, color: Colors.red),
-        );
+      //Use IF/ELSE to check if we've reached the end of the quiz. If true, execute Part A, B, C, D.
+      if (quizBrain.isFinished() == true) {
+        //Show an alert using rFlutter_alert.)
+        Alert(
+                context: context,
+                title: 'Finished',
+                desc: 'You\'ve reached the end of the quiz.')
+            .show();
+        //Reset the questionNumber,
+        quizBrain.reset();
+        //Empty out the scoreKeeper.
+        scoreKeeper = [];
       }
-      quizBrain.nextQuestion();
+
+      //If we've not reached the end, ELSE do the answer checking steps below.
+      else {
+        if (userPickedAnswer == correctAnswer) {
+          scoreKeeper.add(Icon(
+            Icons.check,
+            color: Colors.green,
+          ));
+        } else {
+          scoreKeeper.add(Icon(
+            Icons.close,
+            color: Colors.red,
+          ));
+        }
+        quizBrain.nextQuestion();
+      }
     });
   }
 
@@ -114,3 +135,9 @@ class _QuizPageState extends State<QuizPage> {
     );
   }
 }
+
+/*
+question1: 'You can lead a cow down stairs but not up stairs.', false,
+question2: 'Approximately one quarter of human bones are in the feet.', true,
+question3: 'A slug\'s blood is green.', true,
+*/
